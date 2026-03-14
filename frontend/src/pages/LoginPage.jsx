@@ -9,8 +9,8 @@ export default function LoginPage() {
   
   const [showPassword, setShowPassword] = useState(false)
   const [formData, setFormData] = useState({
-    username: 'testuser',
-    password: 'Test@123456',
+    username: '',
+    password: '',
   })
   const [formError, setFormError] = useState('')
 
