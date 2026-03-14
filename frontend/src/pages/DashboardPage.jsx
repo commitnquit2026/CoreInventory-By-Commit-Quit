@@ -66,11 +66,11 @@ function ManagerDashboard() {
         setLoading(true)
         setError('')
         const response = await inventoryService.getDashboard(filters)
-        // Handle both response structures: response.data.data and response.data
-        const dashboardData = response.data?.data || response.data
+        // API returns { success: true, data: {...} }, so we need response.data.data
+        const dashboardData = response?.data?.data || response?.data || {}
         setData(dashboardData)
       } catch (loadError) {
-        setError(loadError.message)
+        setError(loadError.message || 'Failed to load dashboard analytics')
       } finally {
         setLoading(false)
       }
@@ -80,15 +80,8 @@ function ManagerDashboard() {
 
   if (loading) return <LoadingState label="Loading dashboard analytics..." />
   if (error) return <ErrorState message={error} />
-  if (!data) return <ErrorState message="No dashboard data received" />
 
-  const {
-    kpis = {},
-    stockLevels = [],
-    categoryDistribution = [],
-    movementTimeline = [],
-    warehouseComparison = []
-  } = data || {}
+  const { kpis = {}, stockLevels = [], categoryDistribution = [], movementTimeline = [], warehouseComparison = [] } = data || {}
 
   return (
     <div className="space-y-5">
@@ -274,11 +267,11 @@ function StaffDashboard() {
       try {
         setLoading(true)
         const response = await inventoryService.getDashboard()
-        // Handle both response structures: response.data.data and response.data
-        const dashboardData = response.data?.data || response.data
+        // API returns { success: true, data: {...} }, so we need response.data.data
+        const dashboardData = response?.data?.data || response?.data || {}
         setData(dashboardData)
       } catch (e) {
-        setError(e.message)
+        setError(e.message || 'Failed to load dashboard tasks')
       } finally {
         setLoading(false)
       }
@@ -403,7 +396,7 @@ function StaffDashboard() {
       </div>
 
       {/* Movement Chart (simplified for staff) */}
-      {data?.movementTimeline && (
+      {data?.movementTimeline && data.movementTimeline.length > 0 && (
         <ChartCard title="This Week's Activity" subtitle="Incoming vs outgoing stock movements">
           <div className="h-64">
             <ResponsiveContainer width="100%" height="100%">
