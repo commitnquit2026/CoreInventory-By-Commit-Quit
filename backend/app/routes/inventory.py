@@ -2,7 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import (
     db, Receipt, ReceiptItem, Delivery, DeliveryItem, Transfer, TransferItem,
-    Adjustment, StockLedger, Inventory, Product, Location, Supplier
+    Adjustment, StockLedger, Inventory, Product, Location, Supplier, Category, Warehouse
 )
 from app.utils import SequenceGenerator, ValidationUtils, RoleRequired
 from datetime import datetime

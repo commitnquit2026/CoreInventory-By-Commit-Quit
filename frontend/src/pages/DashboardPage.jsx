@@ -112,62 +112,139 @@ function ManagerDashboard() {
       )}
 
       <section className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {/* Receipts Card */}
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <div className="bg-slate-50 border-b border-slate-200 p-4">
-            <h3 className="font-semibold text-slate-900">Receipts</h3>
-          </div>
-          <div className="p-6">
-            <button
-              onClick={() => navigate('/operations')}
-              className="w-full rounded-lg bg-emerald-50 py-4 px-4 text-center text-emerald-700 hover:bg-emerald-100 transition"
-            >
-              <span className="block text-3xl font-bold">{kpis.pendingReceipts || 0}</span>
-              <span className="block text-sm font-medium mt-1">to receive</span>
-            </button>
-            <div className="mt-6 flex justify-between text-sm">
-              <div>
-                <span className="block font-semibold text-slate-900">0</span>
-                <span className="text-slate-500">Late</span>
-              </div>
-              <div className="text-right">
-                <span className="block font-semibold text-slate-900">{kpis.pendingReceipts || 0}</span>
-                <span className="text-slate-500">Operations</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Stock Count Card */}
+        <KpiCard
+          label="Total Units in Stock"
+          value={kpis.totalProductsInStock || 0}
+          icon={Package}
+          color="from-teal-500 to-teal-600"
+          bgColor="bg-teal-50"
+          textColor="text-teal-700"
+        />
 
-        {/* Deliveries Card */}
-        <div className="rounded-xl border border-slate-200 bg-white shadow-sm overflow-hidden">
-          <div className="bg-slate-50 border-b border-slate-200 p-4">
-            <h3 className="font-semibold text-slate-900">Delivery Orders</h3>
-          </div>
-          <div className="p-6">
-            <button
-              onClick={() => navigate('/operations')}
-              className="w-full rounded-lg bg-blue-50 py-4 px-4 text-center text-blue-700 hover:bg-blue-100 transition"
-            >
-              <span className="block text-3xl font-bold">{kpis.pendingDeliveries || 0}</span>
-              <span className="block text-sm font-medium mt-1">to deliver</span>
-            </button>
-            <div className="mt-6 flex justify-between text-sm">
-              <div>
-                <span className="block font-semibold text-slate-900">0</span>
-                <span className="text-slate-500">Late</span>
-              </div>
-              <div className="text-center">
-                <span className="block font-semibold text-slate-900">0</span>
-                <span className="text-slate-500">Waiting</span>
-              </div>
-              <div className="text-right">
-                <span className="block font-semibold text-slate-900">{kpis.pendingDeliveries || 0}</span>
-                <span className="text-slate-500">Operations</span>
-              </div>
-            </div>
-          </div>
-        </div>
+        {/* Low Stock Alert Card */}
+        <KpiCard
+          label="Low Stock Items"
+          value={kpis.lowStockItems || 0}
+          icon={AlertTriangle}
+          color="from-amber-500 to-amber-600"
+          bgColor="bg-amber-50"
+          textColor="text-amber-700"
+        />
+
+        {/* Pending Receipts Card */}
+        <KpiCard
+          label="Pending Receipts"
+          value={kpis.pendingReceipts || 0}
+          icon={PackagePlus}
+          color="from-emerald-500 to-emerald-600"
+          bgColor="bg-emerald-50"
+          textColor="text-emerald-700"
+        />
+
+        {/* Pending Deliveries Card */}
+        <KpiCard
+          label="Pending Deliveries"
+          value={kpis.pendingDeliveries || 0}
+          icon={Truck}
+          color="from-blue-500 to-blue-600"
+          bgColor="bg-blue-50"
+          textColor="text-blue-700"
+        />
+
+        {/* Internal Transfers Card */}
+        <KpiCard
+          label="In Transit Transfers"
+          value={kpis.internalTransfers || 0}
+          icon={ArrowRightLeft}
+          color="from-purple-500 to-purple-600"
+          bgColor="bg-purple-50"
+          textColor="text-purple-700"
+        />
       </section>
+
+      {/* Charts Grid */}
+      <section className="grid gap-6 lg:grid-cols-2">
+        {/* Stock Levels by Category */}
+        {stockLevels && stockLevels.length > 0 && (
+          <ChartCard title="Stock Levels by Category" subtitle="Inventory distribution">
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <BarChart data={stockLevels}>
+                  <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                  <XAxis dataKey="name" tick={{ fontSize: 12 }} />
+                  <YAxis tick={{ fontSize: 12 }} />
+                  <Tooltip />
+                  <Bar dataKey="value" fill="#0f766e" radius={[8, 8, 0, 0]} />
+                </BarChart>
+              </ResponsiveContainer>
+            </div>
+          </ChartCard>
+        )}
+
+        {/* Category Distribution */}
+        {categoryDistribution && categoryDistribution.length > 0 && (
+          <ChartCard title="Product Count by Category" subtitle="Distribution across categories">
+            <div className="h-80">
+              <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                  <Pie
+                    data={categoryDistribution}
+                    cx="50%"
+                    cy="50%"
+                    labelLine={false}
+                    label={({ name, value }) => `${name}: ${value}`}
+                    outerRadius={100}
+                    fill="#8884d8"
+                    dataKey="value"
+                  >
+                    {categoryDistribution.map((entry, index) => (
+                      <Cell key={`cell-${index}`} fill={pieColors[index % pieColors.length]} />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
+            </div>
+          </ChartCard>
+        )}
+      </section>
+
+      {/* Movement Timeline */}
+      {movementTimeline && movementTimeline.length > 0 && (
+        <ChartCard title="This Week's Stock Movement" subtitle="Incoming vs outgoing transactions">
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={movementTimeline}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="period" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Legend />
+                <Bar dataKey="incoming" fill="#0f766e" radius={[8, 8, 0, 0]} name="Incoming" />
+                <Bar dataKey="outgoing" fill="#f59e0b" radius={[8, 8, 0, 0]} name="Outgoing" />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      )}
+
+      {/* Warehouse Comparison */}
+      {warehouseComparison && warehouseComparison.length > 0 && (
+        <ChartCard title="Stock by Warehouse" subtitle="Current inventory across locations">
+          <div className="h-80">
+            <ResponsiveContainer width="100%" height="100%">
+              <BarChart data={warehouseComparison}>
+                <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
+                <XAxis dataKey="warehouse" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
+                <Tooltip />
+                <Bar dataKey="stock" fill="#0891b2" radius={[8, 8, 0, 0]} />
+              </BarChart>
+            </ResponsiveContainer>
+          </div>
+        </ChartCard>
+      )}
     </div>
   )
 }
@@ -318,7 +395,7 @@ function StaffDashboard() {
       {data?.movementTimeline && (
         <ChartCard title="This Week's Activity" subtitle="Incoming vs outgoing stock movements">
           <div className="h-64">
-            <ResponsiveContainer>
+            <ResponsiveContainer width="100%" height="100%">
               <BarChart data={data.movementTimeline}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="period" tick={{ fontSize: 12 }} />
