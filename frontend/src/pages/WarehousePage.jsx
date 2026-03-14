@@ -15,7 +15,7 @@ export default function WarehousePage() {
         setLoading(true)
         setError('')
         const response = await inventoryService.getWarehouses()
-        setWarehouses(response.data)
+        setWarehouses(response.data.data || response.data)
       } catch (loadError) {
         setError(loadError.message)
       } finally {
@@ -48,29 +48,26 @@ export default function WarehousePage() {
               </span>
               <div>
                 <h2 className="font-heading text-lg font-semibold text-slate-900">{warehouse.name}</h2>
-                <p className="text-sm text-slate-500">Manager: {warehouse.manager}</p>
+                <p className="text-sm text-slate-500">{warehouse.location}</p>
               </div>
             </div>
 
-            <div className="overflow-hidden rounded-xl border border-slate-200">
-              <table className="min-w-full divide-y divide-slate-200 text-sm">
-                <thead className="bg-slate-50 text-left text-slate-600">
-                  <tr>
-                    <th className="px-3 py-2">Rack</th>
-                    <th className="px-3 py-2">Product</th>
-                    <th className="px-3 py-2">Quantity</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-200">
-                  {warehouse.racks.map((rack) => (
-                    <tr key={`${warehouse.id}-${rack.code}`}>
-                      <td className="px-3 py-2 font-medium text-slate-700">{rack.code}</td>
-                      <td className="px-3 py-2 text-slate-600">{rack.product}</td>
-                      <td className="px-3 py-2 text-slate-800">{rack.qty}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
+            <div className="space-y-3 rounded-xl border border-slate-200 bg-slate-50 p-4">
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">Capacity:</span>
+                <span className="text-sm font-semibold text-slate-900">{warehouse.capacity?.toLocaleString()} units</span>
+              </div>
+              <div className="flex items-center justify-between">
+                <span className="text-sm font-medium text-slate-600">Status:</span>
+                <span className={`inline-flex items-center gap-1 text-sm font-semibold ${
+                  warehouse.is_active ? 'text-emerald-700' : 'text-slate-500'
+                }`}>
+                  <span className={`inline-block h-2 w-2 rounded-full ${
+                    warehouse.is_active ? 'bg-emerald-500' : 'bg-slate-300'
+                  }`} />
+                  {warehouse.is_active ? 'Active' : 'Inactive'}
+                </span>
+              </div>
             </div>
           </article>
         ))}

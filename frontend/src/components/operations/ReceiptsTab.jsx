@@ -50,9 +50,12 @@ export default function ReceiptsTab() {
 
   async function loadLocations(warehouseId) {
     try {
+      setError('')
       const res = await inventoryService.getWarehouseLocations(warehouseId)
-      setLocations(res.data?.locations || [])
-    } catch {
+      const locData = res.data?.locations || res.data || []
+      setLocations(Array.isArray(locData) ? locData : [])
+    } catch (e) {
+      setError(`Failed to load locations: ${e.message}`)
       setLocations([])
     }
   }
@@ -61,7 +64,11 @@ export default function ReceiptsTab() {
     e.preventDefault()
     try {
       setError('')
-      const res = await inventoryService.createReceipt(form)
+      const res = await inventoryService.createReceipt({
+        supplier_id: form.supplier_id ? Number(form.supplier_id) : undefined,
+        warehouse_id: Number(form.warehouse_id),
+        notes: form.notes
+      })
       setSuccess('Receipt created! Add items to it below.')
       setShowCreate(false)
       setShowDetail(res.data?.data || res.data)
@@ -96,7 +103,7 @@ export default function ReceiptsTab() {
     if (!showDetail) return
     try {
       setError('')
-      await inventoryService.validateReceipt(showDetail.id)
+      await inventoryService.validateReceipt(showDetail.id, {})
       setSuccess('Receipt validated! Stock has been increased.')
       setShowDetail(null)
       await loadData()
@@ -133,7 +140,15 @@ export default function ReceiptsTab() {
             </label>
             <label className="flex flex-col gap-1 text-sm text-slate-600">
               <span>Warehouse *</span>
-              <select value={form.warehouse_id} onChange={e => { setForm(p => ({...p, warehouse_id: e.target.value})); if (e.target.value) loadLocations(e.target.value) }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none" required>
+              <select value={form.warehouse_id} onChange={e => { 
+                const whId = e.target.value
+                setForm(p => ({...p, warehouse_id: whId}))
+                if (whId) {
+                  loadLocations(Number(whId))
+                } else {
+                  setLocations([])
+                }
+              }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none" required>
                 <option value="">Select warehouse</option>
                 {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
               </select>
@@ -234,7 +249,7 @@ export default function ReceiptsTab() {
                 <td className="px-4 py-3 text-slate-500">{r.created_at ? new Date(r.created_at).toLocaleDateString() : '-'}</td>
                 <td className="px-4 py-3"><span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[r.status] || 'bg-slate-100 text-slate-700'}`}>{r.status}</span></td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={async () => { try { const res = await inventoryService.getReceipt(r.id); setShowDetail(res.data?.data || res.data); if (r.warehouse_id) await loadLocations(r.warehouse_id) } catch { setShowDetail(r) }}} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  <button onClick={async () => { try { const res = await inventoryService.getReceipt(r.id); setShowDetail(res.data?.data || res.data); if (r.warehouse_id) await loadLocations(Number(r.warehouse_id)) } catch { setShowDetail(r) }}} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium">
                     <Eye className="h-3.5 w-3.5" /> View
                   </button>
                 </td>

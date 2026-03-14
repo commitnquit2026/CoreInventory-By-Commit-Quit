@@ -1,8 +1,11 @@
 import { ArrowUpDown, Pencil } from 'lucide-react'
 import { getStockStatus } from '../../utils/format'
 
-function totalStock(warehouseStock) {
-  return Object.values(warehouseStock).reduce((sum, qty) => sum + qty, 0)
+function totalStock(warehouseStock, initialStock) {
+  if (!warehouseStock) {
+    return initialStock || 0
+  }
+  return Object.values(warehouseStock).reduce((sum, qty) => sum + (qty || 0), 0)
 }
 
 export default function ProductTable({ products, onEdit, onSort, sortBy, sortDirection }) {
@@ -35,7 +38,7 @@ export default function ProductTable({ products, onEdit, onSort, sortBy, sortDir
           </thead>
           <tbody className="divide-y divide-slate-200">
             {products.map((product) => {
-              const stock = totalStock(product.warehouseStock)
+              const stock = totalStock(product.warehouseStock, product.initial_stock)
               const status = getStockStatus(stock, product.reorderLevel)
               return (
                 <tr key={product.id} className="hover:bg-slate-50/80">
@@ -43,9 +46,11 @@ export default function ProductTable({ products, onEdit, onSort, sortBy, sortDir
                   <td className="px-4 py-3 text-slate-800">{product.name}</td>
                   <td className="px-4 py-3 text-slate-600">{product.category}</td>
                   <td className="px-4 py-3 text-slate-600">
-                    {Object.entries(product.warehouseStock)
-                      .map(([warehouse, qty]) => `${warehouse}: ${qty}`)
-                      .join(' | ')}
+                    {product.warehouseStock && Object.entries(product.warehouseStock).length > 0
+                      ? Object.entries(product.warehouseStock)
+                          .map(([warehouse, qty]) => `${warehouse}: ${qty}`)
+                          .join(' | ')
+                      : `Total: ${product.initial_stock || 0}`}
                   </td>
                   <td className="px-4 py-3 text-slate-700">{stock}</td>
                   <td className="px-4 py-3">

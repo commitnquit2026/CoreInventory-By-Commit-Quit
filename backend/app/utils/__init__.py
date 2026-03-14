@@ -6,7 +6,7 @@ import base64
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity
+from flask_jwt_extended import jwt_required, get_jwt_identity, get_jwt
 import os
 
 class AuthUtils:
@@ -71,8 +71,8 @@ class RoleRequired:
         @wraps(fn)
         @jwt_required()
         def wrapper(*args, **kwargs):
-            identity = get_jwt_identity()
-            user_role = identity.get('role') if isinstance(identity, dict) else None
+            claims = get_jwt()
+            user_role = claims.get('role')
             
             if user_role not in self.allowed_roles:
                 return jsonify({

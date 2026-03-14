@@ -29,7 +29,7 @@ export default function SuppliersPage() {
       setLoading(true)
       setError('')
       const response = await inventoryService.getSuppliers()
-      setSuppliers(response.data)
+      setSuppliers(response.data.data || response.data)
     } catch (loadError) {
       setError(loadError.message)
     } finally {

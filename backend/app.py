@@ -49,6 +49,13 @@ def create_app(config_class=DevelopmentConfig):
             'message': 'Resource not found'
         }), 404
     
+    @app.errorhandler(415)
+    def unsupported_media_type(error):
+        return jsonify({
+            'success': False,
+            'message': 'Content-Type must be application/json'
+        }), 415
+    
     @app.errorhandler(500)
     def internal_error(error):
         db.session.rollback()

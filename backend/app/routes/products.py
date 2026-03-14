@@ -23,7 +23,7 @@ def get_categories():
 def create_category():
     """Create new category"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('name'):
             return jsonify({'success': False, 'message': 'Category name is required'}), 400
@@ -92,7 +92,7 @@ def get_products():
 def create_product():
     """Create new product"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         # Validate required fields
         required_fields = ['sku', 'name', 'category_id', 'unit_of_measure']
@@ -173,7 +173,7 @@ def update_product(product_id):
         if not product:
             return jsonify({'success': False, 'message': 'Product not found'}), 404
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         # Update fields
         if 'name' in data:

@@ -51,9 +51,12 @@ export default function SettingsPage() {
 
   async function loadLocations(warehouseId) {
     try {
+      setError('')
       const res = await inventoryService.getWarehouseLocations(warehouseId)
-      setLocations(res.data?.locations || [])
-    } catch {
+      const locData = res.data?.locations || res.data || []
+      setLocations(Array.isArray(locData) ? locData : [])
+    } catch (e) {
+      setError(`Failed to load locations: ${e.message}`)
       setLocations([])
     }
   }
@@ -89,7 +92,7 @@ export default function SettingsPage() {
       setSuccess('Location created!')
       setShowCreateLoc(false)
       setLocForm({ rack_code: '', location_type: 'Rack', capacity: '' })
-      await loadLocations(selectedWH.id)
+      await loadLocations(Number(selectedWH.id))
     } catch (e) {
       setError(e.response?.data?.message || e.message)
     }
@@ -215,7 +218,7 @@ export default function SettingsPage() {
             {warehouses.map(wh => (
               <button
                 key={wh.id}
-                onClick={() => { setSelectedWH(wh); loadLocations(wh.id); setShowCreateLoc(false) }}
+                onClick={() => { setSelectedWH(wh); loadLocations(Number(wh.id)); setShowCreateLoc(false) }}
                 className={`w-full text-left rounded-xl p-3 border transition ${selectedWH?.id === wh.id ? 'border-brand-400 bg-brand-50' : 'border-slate-200 hover:bg-slate-50'}`}
               >
                 <p className="font-medium text-slate-900">{wh.name}</p>

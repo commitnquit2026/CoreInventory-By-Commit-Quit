@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import AppLayout from './components/layout/AppLayout'
 import ProtectedRoute from './components/auth/ProtectedRoute'
 import DashboardPage from './pages/DashboardPage'
+import LiveDashboard from './pages/LiveDashboard'
 import LedgerPage from './pages/LedgerPage'
 import OperationsPage from './pages/OperationsPage'
 import ProductsPage from './pages/ProductsPage'
@@ -32,6 +33,7 @@ function App() {
         }
       >
         <Route path="/dashboard" element={<DashboardPage />} />
+        <Route path="/live-dashboard" element={<LiveDashboard />} />
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/operations" element={<OperationsPage />} />
         <Route path="/warehouses" element={<WarehousePage />} />

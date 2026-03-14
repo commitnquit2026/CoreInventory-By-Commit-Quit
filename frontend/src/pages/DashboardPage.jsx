@@ -171,7 +171,7 @@ function ManagerDashboard() {
         {stockLevels && stockLevels.length > 0 && (
           <ChartCard title="Stock Levels by Category" subtitle="Inventory distribution">
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320}>
                 <BarChart data={stockLevels}>
                   <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                   <XAxis dataKey="name" tick={{ fontSize: 12 }} />
@@ -188,7 +188,7 @@ function ManagerDashboard() {
         {categoryDistribution && categoryDistribution.length > 0 && (
           <ChartCard title="Product Count by Category" subtitle="Distribution across categories">
             <div className="h-80">
-              <ResponsiveContainer width="100%" height="100%">
+              <ResponsiveContainer width="100%" height={320}>
                 <PieChart>
                   <Pie
                     data={categoryDistribution}
@@ -216,7 +216,7 @@ function ManagerDashboard() {
       {movementTimeline && movementTimeline.length > 0 && (
         <ChartCard title="This Week's Stock Movement" subtitle="Incoming vs outgoing transactions">
           <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={320}>
               <BarChart data={movementTimeline}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="period" tick={{ fontSize: 12 }} />
@@ -235,7 +235,7 @@ function ManagerDashboard() {
       {warehouseComparison && warehouseComparison.length > 0 && (
         <ChartCard title="Stock by Warehouse" subtitle="Current inventory across locations">
           <div className="h-80">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={320}>
               <BarChart data={warehouseComparison}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="warehouse" tick={{ fontSize: 12 }} />
@@ -399,7 +399,7 @@ function StaffDashboard() {
       {data?.movementTimeline && data.movementTimeline.length > 0 && (
         <ChartCard title="This Week's Activity" subtitle="Incoming vs outgoing stock movements">
           <div className="h-64">
-            <ResponsiveContainer width="100%" height="100%">
+            <ResponsiveContainer width="100%" height={256}>
               <BarChart data={data.movementTimeline}>
                 <CartesianGrid strokeDasharray="3 3" stroke="#e2e8f0" />
                 <XAxis dataKey="period" tick={{ fontSize: 12 }} />

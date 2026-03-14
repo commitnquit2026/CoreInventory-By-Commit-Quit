@@ -1,39 +1,50 @@
 import { useEffect, useState } from 'react'
+import { inventoryService } from '../../services/inventoryService'
 
 const initialState = {
   sku: '',
   name: '',
-  category: 'Electronics',
-  reorderLevel: 0,
-  warehouseStock: {
-    'North Hub': 0,
-    'Central DC': 0,
-    'East Point': 0,
-  },
+  category_id: '',
+  unit_of_measure: 'Units',
+  initial_stock: 0,
 }
 
 export default function ProductModal({ product, open, onClose, onSave }) {
   const [formState, setFormState] = useState(initialState)
+  const [categories, setCategories] = useState([])
+
+  useEffect(() => {
+    loadCategories()
+  }, [])
 
   useEffect(() => {
     if (product) {
-      setFormState(product)
+      setFormState({
+        sku: product.sku || '',
+        name: product.name || '',
+        category_id: product.category_id || '',
+        unit_of_measure: product.unit_of_measure || 'Units',
+        initial_stock: product.initial_stock || 0,
+      })
       return
     }
     setFormState(initialState)
   }, [product])
 
-  if (!open) return null
-
-  const onWarehouseChange = (warehouse, value) => {
-    setFormState((current) => ({
-      ...current,
-      warehouseStock: {
-        ...current.warehouseStock,
-        [warehouse]: Number(value),
-      },
-    }))
+  async function loadCategories() {
+    try {
+      const res = await inventoryService.getCategories()
+      setCategories(res.data?.data || [])
+      // Set first category as default for new products
+      if (!product && res.data?.data?.length > 0) {
+        setFormState((s) => ({ ...s, category_id: res.data.data[0].id }))
+      }
+    } catch (e) {
+      console.error('Failed to load categories:', e)
+    }
   }
+
+  if (!open) return null
 
   const submit = (event) => {
     event.preventDefault()
@@ -53,7 +64,7 @@ export default function ProductModal({ product, open, onClose, onSave }) {
         <div className="mt-4 grid gap-4 md:grid-cols-2">
           <input
             className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
-            placeholder="SKU"
+            placeholder="SKU (e.g. ELECT-001)"
             value={formState.sku}
             onChange={(event) => setFormState((s) => ({ ...s, sku: event.target.value }))}
             required
@@ -67,37 +78,38 @@ export default function ProductModal({ product, open, onClose, onSave }) {
           />
           <select
             className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
-            value={formState.category}
-            onChange={(event) => setFormState((s) => ({ ...s, category: event.target.value }))}
+            value={formState.category_id}
+            onChange={(event) => setFormState((s) => ({ ...s, category_id: Number(event.target.value) }))}
+            required
           >
-            <option>Electronics</option>
-            <option>Packaging</option>
-            <option>Hardware</option>
-            <option>Finished Goods</option>
+            <option value="">Select category</option>
+            {categories.map((cat) => (
+              <option key={cat.id} value={cat.id}>
+                {cat.name}
+              </option>
+            ))}
+          </select>
+          <select
+            className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
+            value={formState.unit_of_measure}
+            onChange={(event) => setFormState((s) => ({ ...s, unit_of_measure: event.target.value }))}
+            required
+          >
+            <option value="Units">Units</option>
+            <option value="Pieces">Pieces</option>
+            <option value="Boxes">Boxes</option>
+            <option value="Kg">Kilograms</option>
+            <option value="Liters">Liters</option>
+            <option value="Meters">Meters</option>
           </select>
           <input
             className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
             type="number"
-            placeholder="Reorder level"
-            value={formState.reorderLevel}
-            onChange={(event) =>
-              setFormState((s) => ({ ...s, reorderLevel: Number(event.target.value) }))
-            }
+            placeholder="Initial stock quantity"
+            value={formState.initial_stock}
+            onChange={(event) => setFormState((s) => ({ ...s, initial_stock: Number(event.target.value) }))}
+            min="0"
           />
-        </div>
-
-        <div className="mt-5 grid gap-3 md:grid-cols-3">
-          {Object.entries(formState.warehouseStock).map(([warehouse, qty]) => (
-            <label key={warehouse} className="flex flex-col gap-1 text-sm text-slate-600">
-              {warehouse}
-              <input
-                className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none"
-                type="number"
-                value={qty}
-                onChange={(event) => onWarehouseChange(warehouse, event.target.value)}
-              />
-            </label>
-          ))}
         </div>
 
         <div className="mt-6 flex justify-end gap-3">

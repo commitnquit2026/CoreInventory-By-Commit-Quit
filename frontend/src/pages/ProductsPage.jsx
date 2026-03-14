@@ -23,7 +23,7 @@ export default function ProductsPage() {
         setLoading(true)
         setError('')
         const response = await inventoryService.getProducts({ search, category })
-        setProducts(response.data)
+        setProducts(response.data.data || response.data)
       } catch (loadError) {
         setError(loadError.message)
       } finally {
@@ -37,8 +37,8 @@ export default function ProductsPage() {
   const visibleProducts = useMemo(() => {
     const filtered = products.filter((product) => {
       const matchesSearch =
-        product.sku.toLowerCase().includes(search.toLowerCase()) ||
-        product.name.toLowerCase().includes(search.toLowerCase())
+        (product.sku?.toLowerCase().includes(search.toLowerCase()) ||
+        product.name?.toLowerCase().includes(search.toLowerCase())) ?? true
       const matchesCategory = category === 'All' || product.category === category
       return matchesSearch && matchesCategory
     })
@@ -46,8 +46,13 @@ export default function ProductsPage() {
     const sorted = [...filtered]
     if (sortBy === 'stock') {
       sorted.sort((a, b) => {
-        const stockA = Object.values(a.warehouseStock).reduce((sum, qty) => sum + qty, 0)
-        const stockB = Object.values(b.warehouseStock).reduce((sum, qty) => sum + qty, 0)
+        // Handle products without warehouseStock data
+        const stockA = a.warehouseStock
+          ? Object.values(a.warehouseStock).reduce((sum, qty) => sum + (qty || 0), 0)
+          : a.initial_stock || 0
+        const stockB = b.warehouseStock
+          ? Object.values(b.warehouseStock).reduce((sum, qty) => sum + (qty || 0), 0)
+          : b.initial_stock || 0
         return sortDirection === 'asc' ? stockA - stockB : stockB - stockA
       })
     }

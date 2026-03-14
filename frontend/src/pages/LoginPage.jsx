@@ -169,16 +169,6 @@ export default function LoginPage() {
             >
               Create Account
             </Link>
-
-            {/* Demo Credentials */}
-            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-2">
-              <p className="text-xs font-semibold text-blue-900">📝 Demo Credentials:</p>
-              <div className="text-xs text-blue-800 space-y-1">
-                <div><strong>Inventory Manager:</strong> manager / Manager@123456</div>
-                <div><strong>Warehouse Staff:</strong> staff / Staff@123456</div>
-              </div>
-              <p className="text-xs text-blue-600 italic">Each role gets a different dashboard &amp; panel.</p>
-            </div>
           </div>
 
           {/* Footer Text */}

@@ -222,6 +222,7 @@ class Receipt(db.Model):
     # Relationships
     warehouse = db.relationship('Warehouse', backref='receipts')
     items = db.relationship('ReceiptItem', backref='receipt', lazy=True, cascade='all, delete-orphan')
+    created_by_user = db.relationship('User', foreign_keys=[created_by], backref='created_receipts')
     validated_by_user = db.relationship('User', foreign_keys=[validated_by], backref='validated_receipts')
     
     def to_dict(self):
@@ -283,8 +284,9 @@ class Delivery(db.Model):
     updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
     
     # Relationships
-    warehouse = db.relationship('Warehouse', backref='deliveries')
+    warehouse = db.relationship('Warehouse', foreign_keys=[warehouse_id])
     items = db.relationship('DeliveryItem', backref='delivery', lazy=True, cascade='all, delete-orphan')
+    created_by_user = db.relationship('User', foreign_keys=[created_by], backref='created_deliveries')
     validated_by_user = db.relationship('User', foreign_keys=[validated_by], backref='validated_deliveries')
     
     def to_dict(self):
@@ -349,6 +351,7 @@ class Transfer(db.Model):
     source_location = db.relationship('Location', foreign_keys=[source_location_id])
     destination_location = db.relationship('Location', foreign_keys=[destination_location_id])
     items = db.relationship('TransferItem', backref='transfer', lazy=True, cascade='all, delete-orphan')
+    created_by_user = db.relationship('User', foreign_keys=[created_by], backref='created_transfers')
     completed_by_user = db.relationship('User', foreign_keys=[completed_by], backref='completed_transfers')
     
     def to_dict(self):
@@ -405,6 +408,7 @@ class Adjustment(db.Model):
     # Relationships
     product = db.relationship('Product')
     location = db.relationship('Location')
+    created_by_user = db.relationship('User', foreign_keys=[created_by], backref='created_adjustments')
     approved_by_user = db.relationship('User', foreign_keys=[approved_by], backref='approved_adjustments')
     
     def to_dict(self):

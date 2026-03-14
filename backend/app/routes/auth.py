@@ -2,6 +2,7 @@ from flask import Blueprint, request, jsonify
 from flask_jwt_extended import jwt_required, get_jwt_identity
 from app.models import db, User, PasswordResetToken
 from app.utils import AuthUtils, ValidationUtils
+from app.utils.email import EmailUtils
 from datetime import datetime, timedelta
 import uuid
 
@@ -11,7 +12,7 @@ auth_bp = Blueprint('auth', __name__, url_prefix='/api/v1/auth')
 def signup():
     """User signup endpoint"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data:
             return jsonify({'success': False, 'message': 'No data provided'}), 400
@@ -73,7 +74,7 @@ def signup():
 def login():
     """User login endpoint"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data:
             return jsonify({'success': False, 'message': 'No data provided'}), 400
@@ -143,7 +144,7 @@ def verify_2fa():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         secret = data.get('secret')
         token = data.get('token')
         
@@ -172,7 +173,7 @@ def verify_2fa():
 def request_password_reset():
     """Request password reset OTP"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         email = data.get('email')
         
         if not email:
@@ -188,7 +189,8 @@ def request_password_reset():
         
         # Generate reset token and OTP
         reset_token = str(uuid.uuid4())
-        otp_code = AuthUtils.get_totp(AuthUtils.generate_otp_secret())
+        otp_secret = AuthUtils.generate_otp_secret()
+        otp_code = AuthUtils.get_totp(otp_secret)
         
         reset_record = PasswordResetToken(
             user_id=user.id,
@@ -200,9 +202,17 @@ def request_password_reset():
         db.session.add(reset_record)
         db.session.commit()
         
+        # Send password reset email with OTP
+        email_sent, email_message = EmailUtils.send_password_reset_email(
+            user_email=user.email,
+            user_name=f"{user.first_name} {user.last_name}",
+            reset_token=reset_token,
+            otp_code=otp_code
+        )
+        
         return jsonify({
             'success': True,
-            'message': 'Password reset OTP sent to email',
+            'message': 'Password reset OTP sent to email' if email_sent else 'OTP generated (email may not be configured)',
             'reset_token': reset_token
         }), 200
     
@@ -214,7 +224,7 @@ def request_password_reset():
 def reset_password():
     """Reset password with OTP"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         reset_token = data.get('reset_token')
         otp_code = data.get('otp_code')
         new_password = data.get('new_password')
@@ -288,7 +298,7 @@ def change_password():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         old_password = data.get('old_password')
         new_password = data.get('new_password')
         

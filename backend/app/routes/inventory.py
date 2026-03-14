@@ -56,7 +56,7 @@ def create_receipt():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('supplier_id') or not data.get('warehouse_id'):
             return jsonify({
@@ -123,7 +123,7 @@ def add_receipt_item(receipt_id):
                 'message': f'Cannot add items to a {receipt.status} receipt'
             }), 400
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         required = ['product_id', 'quantity_expected', 'location_id']
         for field in required:
@@ -183,7 +183,7 @@ def validate_receipt(receipt_id):
                 'message': f'Receipt is already {receipt.status}'
             }), 400
         
-        data = request.get_json() or {}
+        data = request.get_json(force=True) or {}
         
         # Update quantities received
         for item in receipt.items:
@@ -283,7 +283,7 @@ def create_delivery():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('warehouse_id'):
             return jsonify({'success': False, 'message': 'warehouse_id is required'}), 400
@@ -325,7 +325,7 @@ def add_delivery_item(delivery_id):
                 'message': f'Cannot add items to {delivery.status} delivery'
             }), 400
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         required = ['product_id', 'quantity_required', 'location_id']
         for field in required:
@@ -472,7 +472,7 @@ def create_transfer():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         required = ['source_location_id', 'destination_location_id']
         for field in required:
@@ -525,7 +525,7 @@ def add_transfer_item(transfer_id):
                 'message': f'Cannot add items to {transfer.status} transfer'
             }), 400
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         required = ['product_id', 'quantity']
         for field in required:
@@ -703,7 +703,7 @@ def create_adjustment():
         if isinstance(user_id, dict):
             user_id = user_id.get('user_id')
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         required = ['product_id', 'location_id', 'system_quantity', 'physical_quantity', 'reason']
         for field in required:
@@ -1001,7 +1001,7 @@ def pick_delivery(delivery_id):
                 'message': f'Delivery must be in Draft to pick, currently {delivery.status}'
             }), 400
         
-        data = request.get_json() or {}
+        data = request.get_json(force=True) or {}
         
         for item in delivery.items:
             qty_picked = data.get(f'item_{item.id}_picked', item.quantity_required)
@@ -1036,7 +1036,7 @@ def pack_delivery(delivery_id):
                 'message': f'Delivery must be Picked to pack, currently {delivery.status}'
             }), 400
         
-        data = request.get_json() or {}
+        data = request.get_json(force=True) or {}
         
         for item in delivery.items:
             qty_packed = data.get(f'item_{item.id}_packed', item.quantity_picked)

@@ -52,7 +52,7 @@ def list_deliveries():
 def create_delivery():
     """Create a new delivery (Draft status)"""
     user_id = get_jwt_identity()
-    data = request.get_json()
+    data = request.get_json(force=True)
     
     try:
         # Validate required fields
@@ -169,7 +169,7 @@ def update_delivery(delivery_id):
     if delivery.status == 'Done':
         return jsonify({'success': False, 'message': 'Cannot update completed deliveries'}), 400
     
-    data = request.get_json()
+    data = request.get_json(force=True)
     
     try:
         if 'notes' in data:

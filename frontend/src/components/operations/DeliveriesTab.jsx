@@ -46,9 +46,12 @@ export default function DeliveriesTab() {
 
   async function loadLocations(warehouseId) {
     try {
+      setError('')
       const res = await inventoryService.getWarehouseLocations(warehouseId)
-      setLocations(res.data?.locations || [])
-    } catch {
+      const locData = res.data?.locations || res.data || []
+      setLocations(Array.isArray(locData) ? locData : [])
+    } catch (e) {
+      setError(`Failed to load locations: ${e.message}`)
       setLocations([])
     }
   }
@@ -61,7 +64,9 @@ export default function DeliveriesTab() {
       setSuccess('Delivery order created!')
       setShowCreate(false)
       setShowDetail(res.data?.data || res.data)
-      if (form.warehouse_id) await loadLocations(form.warehouse_id)
+      if (form.warehouse_id) {
+        await loadLocations(Number(form.warehouse_id))
+      }
       await loadData()
     } catch (e) {
       setError(e.response?.data?.message || e.message)
@@ -94,13 +99,13 @@ export default function DeliveriesTab() {
     try {
       setError('')
       if (action === 'pick') {
-        await inventoryService.pickDelivery(showDetail.id)
+        await inventoryService.pickDelivery(showDetail.id, {})
         setSuccess('Items picked!')
       } else if (action === 'pack') {
-        await inventoryService.packDelivery(showDetail.id)
+        await inventoryService.packDelivery(showDetail.id, {})
         setSuccess('Items packed!')
       } else if (action === 'validate') {
-        await inventoryService.validateDelivery(showDetail.id)
+        await inventoryService.validateDelivery(showDetail.id, {})
         setSuccess('Delivery validated! Stock reduced.')
       }
       setShowDetail(null)
@@ -130,7 +135,15 @@ export default function DeliveriesTab() {
           <div className="grid gap-3 md:grid-cols-2">
             <label className="flex flex-col gap-1 text-sm text-slate-600">
               <span>Warehouse *</span>
-              <select value={form.warehouse_id} onChange={e => { setForm(p => ({...p, warehouse_id: e.target.value})); if (e.target.value) loadLocations(e.target.value) }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none" required>
+              <select value={form.warehouse_id} onChange={e => { 
+                const whId = e.target.value
+                setForm(p => ({...p, warehouse_id: whId}))
+                if (whId) {
+                  loadLocations(Number(whId))
+                } else {
+                  setLocations([])
+                }
+              }} className="rounded-xl border border-slate-200 px-3 py-2 text-sm focus:border-brand-400 focus:outline-none" required>
                 <option value="">Select warehouse</option>
                 {warehouses.map(w => <option key={w.id} value={w.id}>{w.name}</option>)}
               </select>
@@ -240,7 +253,7 @@ export default function DeliveriesTab() {
                 <td className="px-4 py-3 text-slate-500">{d.created_at ? new Date(d.created_at).toLocaleDateString() : '-'}</td>
                 <td className="px-4 py-3"><span className={`rounded-full px-2.5 py-0.5 text-xs font-medium ${statusColors[d.status] || 'bg-slate-100 text-slate-700'}`}>{d.status}</span></td>
                 <td className="px-4 py-3 text-right">
-                  <button onClick={() => { setShowDetail(d); if (d.warehouse_id) loadLocations(d.warehouse_id) }} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium">
+                  <button onClick={() => { setShowDetail(d); if (d.warehouse_id) loadLocations(Number(d.warehouse_id)) }} className="inline-flex items-center gap-1 text-blue-600 hover:text-blue-800 text-sm font-medium">
                     <Eye className="h-3.5 w-3.5" /> View
                   </button>
                 </td>

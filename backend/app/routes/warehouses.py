@@ -25,7 +25,7 @@ def get_warehouses():
 def create_warehouse():
     """Create new warehouse"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('name'):
             return jsonify({'success': False, 'message': 'Warehouse name is required'}), 400
@@ -84,7 +84,7 @@ def update_warehouse(warehouse_id):
         if not warehouse:
             return jsonify({'success': False, 'message': 'Warehouse not found'}), 404
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if 'name' in data:
             warehouse.name = data['name']
@@ -138,7 +138,7 @@ def create_location(warehouse_id):
         if not warehouse:
             return jsonify({'success': False, 'message': 'Warehouse not found'}), 404
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('rack_code'):
             return jsonify({'success': False, 'message': 'Rack code is required'}), 400
@@ -206,7 +206,7 @@ def update_location(location_id):
         if not location:
             return jsonify({'success': False, 'message': 'Location not found'}), 404
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if 'location_type' in data:
             location.location_type = data['location_type']

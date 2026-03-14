@@ -40,7 +40,7 @@ def get_suppliers():
 def create_supplier():
     """Create new supplier"""
     try:
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if not data.get('name'):
             return jsonify({'success': False, 'message': 'Supplier name is required'}), 400
@@ -99,7 +99,7 @@ def update_supplier(supplier_id):
         if not supplier:
             return jsonify({'success': False, 'message': 'Supplier not found'}), 404
         
-        data = request.get_json()
+        data = request.get_json(force=True)
         
         if 'name' in data:
             supplier.name = data['name']

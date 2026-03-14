@@ -53,19 +53,17 @@ def list_receipts():
 def create_receipt():
     """Create a new receipt (Draft status)"""
     user_id = get_jwt_identity()
-    data = request.get_json()
+    data = request.get_json(force=True)
     
     try:
         # Validate required fields
         if not data.get('warehouse_id'):
             return jsonify({'success': False, 'message': 'warehouse_id is required'}), 400
-        if not data.get('items') or len(data['items']) == 0:
-            return jsonify({'success': False, 'message': 'At least one item is required'}), 400
         
         # Generate receipt number
         receipt_number = f"REC-{datetime.now().strftime('%Y%m%d')}-{uuid.uuid4().hex[:8].upper()}"
         
-        # Create receipt
+        # Create receipt (items are optional, can be added later)
         receipt = Receipt(
             receipt_number=receipt_number,
             warehouse_id=data['warehouse_id'],
@@ -79,30 +77,31 @@ def create_receipt():
         db.session.add(receipt)
         db.session.flush()  # Get the receipt ID
         
-        # Add items
+        # Add items if provided
         total_items = 0
         total_value = 0
-        for item_data in data['items']:
-            product_id = item_data.get('product_id')
-            location_id = item_data.get('location_id')
-            quantity = item_data.get('quantity', 0)
-            unit_price = item_data.get('unit_price', 0)
-            
-            if not product_id or not location_id or quantity <= 0:
-                db.session.rollback()
-                return jsonify({'success': False, 'message': 'Invalid item data'}), 400
-            
-            receipt_item = ReceiptItem(
-                receipt_id=receipt.id,
-                product_id=product_id,
-                location_id=location_id,
-                quantity=quantity,
-                unit_price=unit_price,
-                received_quantity=0
-            )
-            db.session.add(receipt_item)
-            total_items += quantity
-            total_value += quantity * unit_price
+        if data.get('items') and len(data['items']) > 0:
+            for item_data in data['items']:
+                product_id = item_data.get('product_id')
+                location_id = item_data.get('location_id')
+                quantity = item_data.get('quantity', 0)
+                unit_price = item_data.get('unit_price', 0)
+                
+                if not product_id or not location_id or quantity <= 0:
+                    db.session.rollback()
+                    return jsonify({'success': False, 'message': 'Invalid item data'}), 400
+                
+                receipt_item = ReceiptItem(
+                    receipt_id=receipt.id,
+                    product_id=product_id,
+                    location_id=location_id,
+                    quantity=quantity,
+                    unit_price=unit_price,
+                    received_quantity=0
+                )
+                db.session.add(receipt_item)
+                total_items += quantity
+                total_value += quantity * unit_price
         
         receipt.total_items = total_items
         receipt.total_value = total_value
@@ -172,7 +171,7 @@ def update_receipt(receipt_id):
     if receipt.status != 'Draft':
         return jsonify({'success': False, 'message': 'Can only update Draft receipts'}), 400
     
-    data = request.get_json()
+    data = request.get_json(force=True)
     
     try:
         # Update basic fields

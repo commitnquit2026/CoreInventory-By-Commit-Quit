@@ -3,6 +3,7 @@ import {
   Building2,
   ClipboardList,
   LayoutDashboard,
+  BarChart3,
   Package,
   ScrollText,
   Settings,
@@ -20,6 +21,7 @@ const managerNav = [
     title: 'Overview',
     items: [
       { to: '/dashboard', label: 'Dashboard', icon: LayoutDashboard },
+      { to: '/live-dashboard', label: 'Live Analytics', icon: BarChart3 },
     ],
   },
   {
@@ -45,6 +47,7 @@ const staffNav = [
     title: 'Overview',
     items: [
       { to: '/dashboard', label: 'My Tasks', icon: LayoutDashboard },
+      { to: '/live-dashboard', label: 'Live Analytics', icon: BarChart3 },
     ],
   },
   {
