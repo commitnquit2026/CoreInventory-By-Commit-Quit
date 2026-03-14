@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logo Converter</title>
+</head>
+<body>
+    <canvas id="canvas" width="1000" height="1000"></canvas>
+    <script>
+        const canvas = document.getElementById('canvas');
+        const ctx = canvas.getContext('2d');
+
+        // Draw logo on canvas
+        const drawLogo = () => {
+            // Background (transparent)
+            ctx.fillStyle = 'rgba(255, 255, 255, 0)';
+            ctx.fillRect(0, 0, 1000, 1000);
+
+            // Center hexagon
+            ctx.fillStyle = '#1e63b0';
+            ctx.beginPath();
+            const centerX = 500, centerY = 500;
+            const hexRadius = 120;
+            for (let i = 0; i < 6; i++) {
+                const angle = (Math.PI / 3) * i;
+                const x = centerX + hexRadius * Math.cos(angle);
+                const y = centerY + hexRadius * Math.sin(angle);
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            ctx.strokeStyle = '#00f0ff';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+
+            // Inner circle glow
+            const gradient = ctx.createRadialGradient(centerX, centerY, 20, centerX, centerY, 80);
+            gradient.addColorStop(0, '#00f0ff');
+            gradient.addColorStop(1, '#00d4ff');
+            ctx.fillStyle = gradient;
+            ctx.beginPath();
+            ctx.arc(centerX, centerY, 70, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Draw cubes and arrows (simplified)
+            ctx.fillStyle = '#1e63b0';
+            const positions = [
+                [500, 200], [500, 800], [200, 500], [800, 500],
+                [317, 317], [683, 317], [317, 683], [683, 683]
+            ];
+
+            positions.forEach(([x, y]) => {
+                ctx.beginPath();
+                ctx.arc(x, y, 50, 0, Math.PI * 2);
+                ctx.fill();
+            });
+        };
+
+        drawLogo();
+
+        // Convert to PNG
+        const link = document.createElement('a');
+        link.href = canvas.toDataURL('image/png');
+        link.download = 'logo.png';
+        link.click();
+    </script>
+</body>
+</html>
