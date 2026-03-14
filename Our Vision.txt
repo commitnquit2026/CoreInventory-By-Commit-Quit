@@ -1,0 +1,63 @@
+CoreInventory – Unique Selling Points (Virtual Round)
+Team: Commit&Quit
+
+------------------------------------------------
+1. Real-World Inventory Workflow
+------------------------------------------------
+The system models real business operations including
+receipts, deliveries, internal transfers, and stock adjustments.
+
+------------------------------------------------
+2. Real-Time Stock Updates
+------------------------------------------------
+Inventory levels automatically update whenever goods
+are received, delivered, or transferred.
+
+------------------------------------------------
+3. Local Database System
+------------------------------------------------
+The application runs entirely on a local database,
+ensuring fast performance and minimal dependency
+on cloud services.
+
+------------------------------------------------
+4. Minimal Third-Party Dependency
+------------------------------------------------
+The system is built with very few external libraries,
+making it reliable and easy to deploy in production.
+
+------------------------------------------------
+5. Complete Stock Movement History
+------------------------------------------------
+Every inventory action is logged in a stock ledger
+to provide full traceability.
+
+------------------------------------------------
+6. Multi-Warehouse Support
+------------------------------------------------
+Businesses can manage inventory across multiple
+warehouses and locations.
+
+------------------------------------------------
+7. Smart Product Search
+------------------------------------------------
+Products can be quickly located using SKU search
+and filtering by category or warehouse.
+
+------------------------------------------------
+8. Low Stock Alerts
+------------------------------------------------
+The system notifies managers when stock reaches
+a critical level.
+
+------------------------------------------------
+9. Modular Architecture
+------------------------------------------------
+The system is built using modular components,
+making it easy to expand and maintain.
+
+------------------------------------------------
+10. Clean and Interactive UI
+------------------------------------------------
+The interface is designed to be simple,
+efficient, and easy for warehouse staff to use.
