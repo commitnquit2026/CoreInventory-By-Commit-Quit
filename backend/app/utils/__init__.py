@@ -6,23 +6,24 @@ import base64
 from datetime import datetime, timedelta
 from functools import wraps
 from flask import request, jsonify
-from flask_jwt_extended import jwt_required, get_jwt_identity, create_access_token, get_jwt
+from flask_jwt_extended import jwt_required, get_jwt_identity
 import os
 
 class AuthUtils:
     @staticmethod
     def generate_jwt_token(user_id, user_role, expires_in=3600):
-        """Generate JWT token for user using Flask-JWT-Extended"""
-        # Flask-JWT-Extended requires 'sub' claim to be a string
-        # Store user_id and role in additional_claims
-        additional_claims = {
+        """Generate JWT token for user"""
+        payload = {
+            'sub': str(user_id),  # Required by Flask-JWT-Extended
             'user_id': user_id,
-            'role': user_role
+            'role': user_role,
+            'iat': datetime.utcnow(),
+            'exp': datetime.utcnow() + timedelta(seconds=expires_in)
         }
-        token = create_access_token(
-            identity=str(user_id),  # 'sub' claim must be a string
-            expires_delta=timedelta(seconds=expires_in),
-            additional_claims=additional_claims
+        token = jwt.encode(
+            payload,
+            os.getenv('JWT_SECRET_KEY', 'change-this-secret'),
+            algorithm='HS256'
         )
         return token
     
@@ -70,9 +71,8 @@ class RoleRequired:
         @wraps(fn)
         @jwt_required()
         def wrapper(*args, **kwargs):
-            # get_jwt() returns all claims in the JWT payload
-            claims = get_jwt()
-            user_role = claims.get('role')
+            identity = get_jwt_identity()
+            user_role = identity.get('role') if isinstance(identity, dict) else None
             
             if user_role not in self.allowed_roles:
                 return jsonify({
