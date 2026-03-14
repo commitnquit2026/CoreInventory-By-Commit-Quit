@@ -66,7 +66,9 @@ function ManagerDashboard() {
         setLoading(true)
         setError('')
         const response = await inventoryService.getDashboard(filters)
-        setData(response.data)
+        // Handle both response structures: response.data.data and response.data
+        const dashboardData = response.data?.data || response.data
+        setData(dashboardData)
       } catch (loadError) {
         setError(loadError.message)
       } finally {
@@ -78,8 +80,15 @@ function ManagerDashboard() {
 
   if (loading) return <LoadingState label="Loading dashboard analytics..." />
   if (error) return <ErrorState message={error} />
+  if (!data) return <ErrorState message="No dashboard data received" />
 
-  const { kpis, stockLevels, categoryDistribution, movementTimeline, warehouseComparison } = data
+  const {
+    kpis = {},
+    stockLevels = [],
+    categoryDistribution = [],
+    movementTimeline = [],
+    warehouseComparison = []
+  } = data || {}
 
   return (
     <div className="space-y-5">
@@ -265,7 +274,9 @@ function StaffDashboard() {
       try {
         setLoading(true)
         const response = await inventoryService.getDashboard()
-        setData(response.data)
+        // Handle both response structures: response.data.data and response.data
+        const dashboardData = response.data?.data || response.data
+        setData(dashboardData)
       } catch (e) {
         setError(e.message)
       } finally {
