@@ -1,4 +1,4 @@
-# 🎉 CoreInventory - Intelligent Inventory Management System
+# CoreInventory - Intelligent Inventory Management System
 
 <div align="center">
 
