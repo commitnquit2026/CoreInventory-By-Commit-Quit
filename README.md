@@ -2,7 +2,7 @@
 
 <div align="center">
 
-![CoreInventory Logo](frontend/public/CoreInventory_Logo.png)
+![CoreInventory Logo](https://github.com/commitnquit2026/CoreInventory-By-Commit-Quit/blob/main/CoreInventory_Logo.png)
 
 **A modern, full-stack inventory management system with real-time tracking, SMTP email integration, and comprehensive analytics.**
 
