@@ -100,6 +100,18 @@ export const inventoryService = {
     return http.post('/suppliers', payload)
   },
 
+  getSupplier(id) {
+    return http.get(`/suppliers/${id}`)
+  },
+
+  updateSupplier(id, payload) {
+    return http.put(`/suppliers/${id}`, payload)
+  },
+
+  deleteSupplier(id) {
+    return http.delete(`/suppliers/${id}`)
+  },
+
   // ==================== RECEIPTS ====================
   getReceipts(params) {
     return withMockFallback(() => http.get('/inventory/receipts', { params }), [])

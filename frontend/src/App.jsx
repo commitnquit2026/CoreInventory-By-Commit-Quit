@@ -6,6 +6,7 @@ import LedgerPage from './pages/LedgerPage'
 import OperationsPage from './pages/OperationsPage'
 import ProductsPage from './pages/ProductsPage'
 import WarehousePage from './pages/WarehousePage'
+import SuppliersPage from './pages/SuppliersPage'
 import LoginPage from './pages/LoginPage'
 import RegisterPage from './pages/RegisterPage'
 import ProfilePage from './pages/ProfilePage'
@@ -34,6 +35,7 @@ function App() {
         <Route path="/products" element={<ProductsPage />} />
         <Route path="/operations" element={<OperationsPage />} />
         <Route path="/warehouses" element={<WarehousePage />} />
+        <Route path="/suppliers" element={<SuppliersPage />} />
         <Route path="/ledger" element={<LedgerPage />} />
         <Route path="/profile" element={<ProfilePage />} />
         <Route path="/settings" element={<SettingsPage />} />

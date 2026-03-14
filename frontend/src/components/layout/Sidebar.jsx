@@ -28,6 +28,7 @@ const managerNav = [
       { to: '/products', label: 'Products', icon: Package },
       { to: '/operations', label: 'Operations', icon: ClipboardList },
       { to: '/warehouses', label: 'Warehouses', icon: Building2 },
+      { to: '/suppliers', label: 'Suppliers', icon: Building2 },
       { to: '/ledger', label: 'Stock Ledger', icon: ScrollText },
     ],
   },
