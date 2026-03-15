@@ -12,34 +12,10 @@
 
 </div>
 
----
-
-## 🎨 Logo & Branding
-
-### CoreInventory Logo
 <div align="center">
   <img src="frontend/public/CoreInventory_Logo.png" alt="CoreInventory Logo" width="200" height="200" />
-  <p><i>Professional inventory management branding</i></p>
 </div>
 
-**Logo Details:**
-- **Design**: Modern, minimalist approach with geometric elements
-- **Color Scheme**: Professional blues representing trust and stability
-- **Symbol**: Integrated warehouse/storage concept with inventory flow indicators
-- **Scalability**: Vector-based design that scales across all devices
-- **Usage**: 
-  - Navigation bar branding
-  - Website favicon
-  - Document headers
-  - Social media assets
-
-**Alternative Logo:**
-<div align="center">
-  <img src="frontend/public/Code Inventory LOGO Refined.png" alt="Code Inventory Logo" width="200" height="200" />
-  <p><i>Alternative design iteration</i></p>
-</div>
-
----
 
 ## 📊 EXECUTIVE SUMMARY
 
